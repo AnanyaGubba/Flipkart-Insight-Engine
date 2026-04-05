@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Flipkart Sales Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #f7931a;
+    --accent2: #6c63ff;
+    --accent3: #00d4aa;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --danger: #ff6b6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(247,147,26,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); }
+  .status-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #555;
+    transition: background 0.3s;
+  }
+  .status-dot.online { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+  .status-dot.offline { background: var(--danger); }
+
+  /* ── Layout ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.5rem 2.5rem 4rem;
+    position: relative; z-index: 1;
+  }
+
+  /* ── Hero stats ── */
+  .hero {
+    margin-bottom: 2.5rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero p { color: var(--muted); font-size: 0.95rem; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--kpi-color, var(--accent));
+    opacity: 0.7;
+  }
+  .kpi-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.75rem;
+  }
+  .kpi-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .kpi-sub {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* ── Section titles ── */
+  .section-head {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .section-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Grid layouts ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .full { margin-bottom: 1.25rem; }
+  @media (max-width: 900px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  /* ── Country bars ── */
+  .country-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .country-row:last-child { border-bottom: none; }
+  .country-name { width: 130px; font-size: 0.85rem; flex-shrink: 0; }
+  .country-bar-wrap { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .country-bar {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+  .country-val { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); width: 80px; text-align: right; }
+
+  /* ── Product rows ── */
+  .product-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .product-row:last-child { border-bottom: none; }
+  .product-rank {
+    font-family: 'DM Mono', monospace; font-size: 0.7rem;
+    color: var(--muted); width: 24px; text-align: right; flex-shrink: 0;
+  }
+  .product-name { flex: 1; font-size: 0.82rem; line-height: 1.3; }
+  .product-rev { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); flex-shrink: 0; }
+
+  /* ── Segment pills ── */
+  .segments-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+  .segment-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .segment-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--seg-color);
+  }
+  .seg-label {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+  .seg-stats { display: flex; flex-direction: column; gap: 6px; }
+  .seg-stat { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); }
+  .seg-stat span:last-child { color: var(--text); font-family: 'DM Mono', monospace; }
+
+  /* ── Monthly chart ── */
+  .chart-wrap { position: relative; height: 180px; margin-top: 0.5rem; }
+  svg.line-chart { width: 100%; height: 100%; }
+  .chart-tooltip {
+    position: absolute; pointer-events: none;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px;
+    font-size: 0.78rem; font-family: 'DM Mono', monospace;
+    opacity: 0; transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+
+  /* ── Rules table ── */
+  .rules-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .rules-table th {
+    text-align: left; padding: 8px 12px;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); border-bottom: 1px solid var(--border);
+  }
+  .rules-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .rules-table tr:last-child td { border-bottom: none; }
+  .rules-table tr:hover td { background: var(--surface2); }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem;
+    background: rgba(108,99,255,0.15); color: var(--accent2); margin: 2px 2px 2px 0;
+  }
+  .lift-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── Forecast chart ── */
+  .forecast-legend {
+    display: flex; gap: 1.5rem; margin-bottom: 1rem; font-size: 0.78rem;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+  .legend-dot { width: 10px; height: 3px; border-radius: 2px; }
+
+  /* ── Loader ── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .loading-bar { height: 14px; margin-bottom: 10px; }
+
+  /* ── Error state ── */
+  .error-state {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--muted);
+  }
+  .error-state .err-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .error-state p { font-size: 0.9rem; line-height: 1.6; }
+  .error-state code {
+    display: inline-block; margin-top: 1rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 8px;
+    font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--accent);
+  }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab {
+    padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--muted);
+    font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Search ── */
+  .customer-search {
+    display: flex; gap: 10px; margin-bottom: 1rem;
+  }
+  .customer-search input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 16px; border-radius: 10px;
+    font-family: 'DM Mono', monospace; font-size: 0.85rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .customer-search input:focus { border-color: var(--accent2); }
+  .customer-search button {
+    padding: 10px 20px; background: var(--accent2); color: #fff;
+    border: none; border-radius: 10px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .customer-search button:hover { opacity: 0.85; }
+  .customer-result {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem;
+  }
+  .customer-result .cr-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .customer-result .cr-row:last-child { border-bottom: none; }
+  .customer-result .cr-row span:first-child { color: var(--muted); }
+  .customer-result .cr-row span:last-child { font-family: 'DM Mono', monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Flipkart <span>Sales Intelligence</span></div>
+  <div class="status-pill">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">connecting…</span>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Sales <em>Analytics</em><br>Data Warehouse</h1>
+    <p>Star-schema warehouse · K-Means RFM · Apriori rules · Linear regression forecast</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi skeleton" style="height:110px;--kpi-color:var(--accent)"></div>
+    <div class="kpi skeleton" style="height:110px;--kpi-color:var(--accent2)"></div>
+    <div class="kpi skeleton" style="height:110px;--kpi-color:var(--accent3)"></div>
+    <div class="kpi skeleton" style="height:110px;--kpi-color:var(--danger)"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+    <button class="tab" onclick="showTab('mining')">Data Mining</button>
+    <button class="tab" onclick="showTab('forecast')">Forecast</button>
+    <button class="tab" onclick="showTab('lookup')">Customer Lookup</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div id="tab-overview">
+    <div class="two-col">
+      <div class="card">
+        <div class="section-head">
+          <h2>Revenue by Country</h2>
+          <span class="section-tag">Top 10</span>
+        </div>
+        <div id="countryList"><div class="loading-bar skeleton"></div><div class="loading-bar skeleton" style="width:80%"></div><div class="loading-bar skeleton" style="width:60%"></div></div>
+      </div>
+      <div class="card">
+        <div class="section-head">
+          <h2>Top Products</h2>
+          <span class="section-tag">by Revenue</span>
+        </div>
+        <div id="productList"><div class="loading-bar skeleton"></div><div class="loading-bar skeleton" style="width:85%"></div><div class="loading-bar skeleton" style="width:70%"></div></div>
+      </div>
+    </div>
+    <div class="full card">
+      <div class="section-head">
+        <h2>Monthly Revenue Trend</h2>
+        <span class="section-tag">All Time</span>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-tooltip" id="chartTooltip"></div>
+        <svg class="line-chart" id="monthlyChart" viewBox="0 0 800 160" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINING TAB -->
+  <div id="tab-mining" style="display:none">
+    <div class="full card">
+      <div class="section-head">
+        <h2>Customer Segments</h2>
+        <span class="section-tag">K-Means RFM</span>
+      </div>
+      <div class="segments-grid" id="segmentGrid">
+        <div class="segment-card skeleton" style="height:130px"></div>
+        <div class="segment-card skeleton" style="height:130px"></div>
+        <div class="segment-card skeleton" style="height:130px"></div>
+        <div class="segment-card skeleton" style="height:130px"></div>
+      </div>
+    </div>
+    <div class="full card">
+      <div class="section-head">
+        <h2>Association Rules</h2>
+        <span class="section-tag">Apriori · Top 10 by Lift</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rules-table" id="rulesTable">
+          <thead><tr><th>Antecedents</th><th>Consequents</th><th>Support</th><th>Confidence</th><th>Lift</th></tr></thead>
+          <tbody id="rulesBody"><tr><td colspan="5"><div class="loading-bar skeleton"></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORECAST TAB -->
+  <div id="tab-forecast" style="display:none">
+    <div class="full card">
+      <div class="section-head">
+        <h2>Daily Revenue Forecast</h2>
+        <span class="section-tag">Linear Regression · 30 days</span>
+      </div>
+      <div class="forecast-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#6c63ff"></div> Actual</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);opacity:0.7;border-top:2px dashed var(--accent);height:0"></div> Forecast</div>
+      </div>
+      <div class="chart-wrap" style="height:220px">
+        <svg class="line-chart" id="forecastChart" viewBox="0 0 900 200" preserveAspectRatio="none"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOOKUP TAB -->
+  <div id="tab-lookup" style="display:none">
+    <div class="full card">
+      <div class="section-head"><h2>Customer Lookup</h2><span class="section-tag">By ID</span></div>
+      <div class="customer-search">
+        <input type="text" id="custInput" placeholder="Enter Customer ID  e.g. 17850" />
+        <button onclick="lookupCustomer()">Search</button>
+      </div>
+      <div id="custResult"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const BASE = 'http://127.0.0.1:8000';
+
+// ── Tabs ──────────────────────────────────────────────────────────
+function showTab(name) {
+  ['overview','mining','forecast','lookup'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((b,i) => {
+    b.classList.toggle('active', ['overview','mining','forecast','lookup'][i]===name);
+  });
+}
+
+// ── Format helpers ────────────────────────────────────────────────
+const fmt = v => v >= 1e6 ? `£${(v/1e6).toFixed(2)}M` : v >= 1e3 ? `£${(v/1e3).toFixed(1)}K` : `£${v.toFixed(0)}`;
+const pct = v => `${(v*100).toFixed(1)}%`;
+const num = v => Number(v).toLocaleString();
+
+// ── Status ────────────────────────────────────────────────────────
+async function checkStatus() {
+  try {
+    const r = await fetch(BASE+'/health'); const d = await r.json();
+    document.getElementById('statusDot').className = 'status-dot online';
+    document.getElementById('statusText').textContent = 'API online';
+  } catch {
+    document.getElementById('statusDot').className = 'status-dot offline';
+    document.getElementById('statusText').textContent = 'API offline';
+  }
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────
+async function loadKPIs() {
+  const d = await (await fetch(BASE+'/summary')).json();
+  const kpis = [
+    { label:'Total Revenue', value: fmt(d.total_revenue), sub: d.date_range, color:'var(--accent)' },
+    { label:'Fact Lines', value: num(d.fact_lines), sub:'invoice line items', color:'var(--accent2)' },
+    { label:'Customers', value: num(d.customers), sub:'unique customer IDs', color:'var(--accent3)' },
+    { label:'Products', value: num(d.products), sub:'distinct SKUs', color:'var(--danger)' },
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpis.map((k,i) => `
+    <div class="kpi" style="--kpi-color:${k.color};animation-delay:${i*0.08}s">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+}
+
+// ── Countries ─────────────────────────────────────────────────────
+async function loadCountries() {
+  const d = await (await fetch(BASE+'/revenue-by-country?limit=10')).json();
+  const max = Math.max(...d.countries.map(c=>c.revenue));
+  document.getElementById('countryList').innerHTML = d.countries.map(c => `
+    <div class="country-row">
+      <div class="country-name">${c.country}</div>
+      <div class="country-bar-wrap"><div class="country-bar" style="width:${(c.revenue/max*100).toFixed(1)}%"></div></div>
+      <div class="country-val">${fmt(c.revenue)}</div>
+    </div>`).join('');
+  // Animate bars
+  setTimeout(()=>document.querySelectorAll('.country-bar').forEach(b=>b.style.width=b.style.width),50);
+}
+
+// ── Products ──────────────────────────────────────────────────────
+async function loadProducts() {
+  const d = await (await fetch(BASE+'/top-products?limit=12')).json();
+  document.getElementById('productList').innerHTML = d.items.map((p,i) => `
+    <div class="product-row">
+      <div class="product-rank">${String(i+1).padStart(2,'0')}</div>
+      <div class="product-name">${p.description.slice(0,40)}</div>
+      <div class="product-rev">${fmt(p.revenue)}</div>
+    </div>`).join('');
+}
+
+// ── Monthly chart ─────────────────────────────────────────────────
+async function loadMonthly() {
+  const d = await (await fetch(BASE+'/monthly-revenue')).json();
+  const rows = d.monthly;
+  const vals = rows.map(r=>r.revenue);
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const W=800, H=160, pad=10;
+  const x = i => pad + (i/(rows.length-1))*(W-pad*2);
+  const y = v => H - pad - ((v-minV)/(maxV-minV))*(H-pad*2);
+
+  const pts = rows.map((r,i)=>`${x(i).toFixed(1)},${y(r.revenue).toFixed(1)}`).join(' ');
+  const area = `M${x(0)},${H-pad} ` + rows.map((r,i)=>`L${x(i).toFixed(1)},${y(r.revenue).toFixed(1)}`).join(' ') + ` L${x(rows.length-1)},${H-pad} Z`;
+
+  const svg = document.getElementById('monthlyChart');
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="gr" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#6c63ff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#gr)"/>
+    <polyline points="${pts}" fill="none" stroke="#6c63ff" stroke-width="2.5" stroke-linejoin="round"/>
+    ${rows.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.revenue).toFixed(1)}" r="4" fill="#6c63ff" opacity="0.8"
+      data-label="${r.month_name} ${r.year}" data-val="${fmt(r.revenue)}"
+      onmouseover="showTip(event,this)" onmouseout="hideTip()"/>`).join('')}
+  `;
+}
+
+function showTip(e, el) {
+  const tt = document.getElementById('chartTooltip');
+  tt.textContent = `${el.dataset.label}: ${el.dataset.val}`;
+  tt.style.opacity = '1';
+  tt.style.left = (e.offsetX+12)+'px';
+  tt.style.top = (e.offsetY-30)+'px';
+}
+function hideTip() { document.getElementById('chartTooltip').style.opacity='0'; }
+
+// ── Segments ──────────────────────────────────────────────────────
+const SEG_COLORS = { 'Champions':'#f7931a', 'Loyal Customers':'#6c63ff', 'At Risk':'#00d4aa', 'Lost':'#ff6b6b' };
+
+async function loadSegments() {
+  const d = await (await fetch(BASE+'/segments')).json();
+  document.getElementById('segmentGrid').innerHTML = d.segments.map(s => `
+    <div class="segment-card" style="--seg-color:${SEG_COLORS[s.segment_label]||'#888'}">
+      <div class="seg-label">${s.segment_label}</div>
+      <div class="seg-stats">
+        <div class="seg-stat"><span>Customers</span><span>${num(s.customers)}</span></div>
+        <div class="seg-stat"><span>Avg Revenue</span><span>${fmt(s.avg_monetary)}</span></div>
+        <div class="seg-stat"><span>Avg Frequency</span><span>${Number(s.avg_frequency).toFixed(1)}x</span></div>
+        <div class="seg-stat"><span>Avg Recency</span><span>${Math.round(s.avg_recency)} days</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Association Rules ─────────────────────────────────────────────
+async function loadRules() {
+  try {
+    const d = await (await fetch(BASE+'/rules')).json();
+    renderRules(d.rules);
+  } catch {
+    // Fallback: show placeholder message
+    document.getElementById('rulesBody').innerHTML = `
+      <tr><td colspan="5" style="color:var(--muted);font-size:0.82rem;padding:1rem 12px">
+        Run <code style="font-family:'DM Mono',monospace;color:var(--accent)">python3 main.py</code>
+        then refresh — rules are mined and stored in the DB.
+        <br><br>The Apriori algorithm found products frequently bought together in UK orders.
+      </td></tr>`;
+  }
+}
+
+function renderRules(rules) {
+  if (!rules || !rules.length) { loadRules(); return; }
+  const liftColor = l => l > 8 ? '#00d4aa' : l > 5 ? '#f7931a' : '#6c63ff';
+  document.getElementById('rulesBody').innerHTML = rules.slice(0,10).map(r => `
+    <tr>
+      <td>${r.antecedents.map(a=>`<span class="badge">${a}</span>`).join('')}</td>
+      <td>${r.consequents.map(c=>`<span class="badge">${c}</span>`).join('')}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--muted)">${pct(r.support)}</td>
+      <td style="font-family:'DM Mono',monospace">${pct(r.confidence)}</td>
+      <td><span class="lift-badge" style="color:${liftColor(r.lift)}">${r.lift.toFixed(2)}×</span></td>
+    </tr>`).join('');
+}
+
+// ── Forecast chart ────────────────────────────────────────────────
+async function loadForecast() {
+  try {
+    const d = await (await fetch(BASE+'/forecast')).json();
+    const actual = d.actual, fc = d.forecast;
+    // Sample actual (every 3rd point for readability)
+    const sampled = actual.filter((_,i)=>i%3===0);
+    const allVals = [...sampled.map(r=>r.daily_revenue), ...fc.map(r=>r.forecasted_revenue)];
+    const minV = 0, maxV = Math.max(...allVals)*1.1;
+    const W=900, H=200, pad=15;
+    const totalPts = sampled.length + fc.length;
+    const x = i => pad + (i/(totalPts-1))*(W-pad*2);
+    const y = v => H - pad - ((v-minV)/(maxV-minV))*(H-pad*2);
+
+    const actPts = sampled.map((r,i)=>`${x(i).toFixed(1)},${y(r.daily_revenue).toFixed(1)}`).join(' ');
+    const fcPts  = fc.map((r,i)=>`${x(sampled.length-1+i).toFixed(1)},${y(r.forecasted_revenue).toFixed(1)}`).join(' ');
+
+    const svg = document.getElementById('forecastChart');
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="agr" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#6c63ff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polyline points="${actPts}" fill="none" stroke="#6c63ff" stroke-width="2" stroke-linejoin="round"/>
+      <polyline points="${fcPts}"  fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()}" stroke-width="2" stroke-dasharray="6,4" stroke-linejoin="round"/>
+      <line x1="${x(sampled.length-1).toFixed(1)}" y1="${pad}" x2="${x(sampled.length-1).toFixed(1)}" y2="${H-pad}" stroke="rgba(255,255,255,0.15)" stroke-dasharray="4,4"/>
+    `;
+  } catch(e) {
+    document.getElementById('forecastChart').innerHTML = `<text x="50%" y="50%" fill="#6b6b80" text-anchor="middle" font-size="14" font-family="DM Sans">Run python3 main.py first to generate forecast data</text>`;
+  }
+}
+
+// ── Customer Lookup ───────────────────────────────────────────────
+async function lookupCustomer() {
+  const id = document.getElementById('custInput').value.trim();
+  if (!id) return;
+  const el = document.getElementById('custResult');
+  el.innerHTML = '<div class="loading-bar skeleton" style="height:80px"></div>';
+  try {
+    const d = await (await fetch(`${BASE}/customer/${id}`)).json();
+    if (d.detail) throw new Error(d.detail);
+    el.innerHTML = `
+      <div class="customer-result">
+        <div class="cr-row"><span>Customer ID</span><span>${d.customer_id}</span></div>
+        <div class="cr-row"><span>Country</span><span>${d.country}</span></div>
+        <div class="cr-row"><span>Segment</span><span style="color:${SEG_COLORS[d.segment_label]||'#888'}">${d.segment_label||'—'}</span></div>
+        <div class="cr-row"><span>Recency</span><span>${d.recency_days} days ago</span></div>
+        <div class="cr-row"><span>Frequency</span><span>${d.frequency} orders</span></div>
+        <div class="cr-row"><span>Lifetime Value</span><span style="color:var(--accent)">${fmt(d.monetary)}</span></div>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="error-state"><div class="err-icon">🔍</div><p>Customer <strong>${id}</strong> not found.<br>Try IDs like 17850, 15311, 14646…</p></div>`;
+  }
+}
+document.getElementById('custInput').addEventListener('keydown', e => { if(e.key==='Enter') lookupCustomer(); });
+
+// ── Init ──────────────────────────────────────────────────────────
+async function init() {
+  await checkStatus();
+  try {
+    await Promise.all([loadKPIs(), loadCountries(), loadProducts(), loadMonthly()]);
+    loadSegments();
+    loadForecast();
+    loadRules();
+  } catch(e) {
+    document.getElementById('kpiGrid').innerHTML = `
+      <div class="card" style="grid-column:1/-1">
+        <div class="error-state">
+          <div class="err-icon">⚠️</div>
+          <p>Could not connect to the API.<br>Make sure the backend is running:</p>
+          <code>uvicorn backend.app:app --reload</code>
+        </div>
+      </div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+flipkart_dw.db
+output/
+.DS_Store

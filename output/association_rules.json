@@ -1,0 +1,234 @@
+[
+  {
+    "antecedents": [
+      "ALARM CLOCK BAKELIKE RED "
+    ],
+    "consequents": [
+      "ALARM CLOCK BAKELIKE GREEN"
+    ],
+    "support": 0.0368,
+    "confidence": 0.5786,
+    "lift": 10.9586
+  },
+  {
+    "antecedents": [
+      "ALARM CLOCK BAKELIKE GREEN"
+    ],
+    "consequents": [
+      "ALARM CLOCK BAKELIKE RED "
+    ],
+    "support": 0.0368,
+    "confidence": 0.697,
+    "lift": 10.9586
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG  BLACK SKULL.",
+      "LUNCH BAG CARS BLUE"
+    ],
+    "consequents": [
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "support": 0.0206,
+    "confidence": 0.6358,
+    "lift": 9.0313
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "consequents": [
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "support": 0.0248,
+    "confidence": 0.6139,
+    "lift": 8.7196
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "consequents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "support": 0.0248,
+    "confidence": 0.3523,
+    "lift": 8.7196
+  },
+  {
+    "antecedents": [
+      "PAPER CHAIN KIT VINTAGE CHRISTMAS"
+    ],
+    "consequents": [
+      "PAPER CHAIN KIT 50'S CHRISTMAS "
+    ],
+    "support": 0.0364,
+    "confidence": 0.6741,
+    "lift": 8.4049
+  },
+  {
+    "antecedents": [
+      "PAPER CHAIN KIT 50'S CHRISTMAS "
+    ],
+    "consequents": [
+      "PAPER CHAIN KIT VINTAGE CHRISTMAS"
+    ],
+    "support": 0.0364,
+    "confidence": 0.4539,
+    "lift": 8.4049
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG SUKI  DESIGN ",
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "consequents": [
+      "LUNCH BAG RED RETROSPOT"
+    ],
+    "support": 0.0208,
+    "confidence": 0.7482,
+    "lift": 8.0974
+  },
+  {
+    "antecedents": [
+      "WOODEN FRAME ANTIQUE WHITE "
+    ],
+    "consequents": [
+      "WOODEN PICTURE FRAME WHITE FINISH"
+    ],
+    "support": 0.0348,
+    "confidence": 0.537,
+    "lift": 8.0636
+  },
+  {
+    "antecedents": [
+      "WOODEN PICTURE FRAME WHITE FINISH"
+    ],
+    "consequents": [
+      "WOODEN FRAME ANTIQUE WHITE "
+    ],
+    "support": 0.0348,
+    "confidence": 0.5225,
+    "lift": 8.0636
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "consequents": [
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "support": 0.0248,
+    "confidence": 0.6458,
+    "lift": 7.9341
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "consequents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "support": 0.0248,
+    "confidence": 0.3047,
+    "lift": 7.9341
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG CARS BLUE"
+    ],
+    "consequents": [
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "support": 0.02,
+    "confidence": 0.6452,
+    "lift": 7.9258
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG PINK POLKADOT",
+      "LUNCH BAG CARS BLUE"
+    ],
+    "consequents": [
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "support": 0.0206,
+    "confidence": 0.6319,
+    "lift": 7.7629
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG PINK POLKADOT",
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "consequents": [
+      "LUNCH BAG CARS BLUE"
+    ],
+    "support": 0.0206,
+    "confidence": 0.545,
+    "lift": 7.5691
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG SUKI  DESIGN ",
+      "LUNCH BAG RED RETROSPOT"
+    ],
+    "consequents": [
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "support": 0.0208,
+    "confidence": 0.5174,
+    "lift": 7.3496
+  },
+  {
+    "antecedents": [
+      "JUMBO BAG VINTAGE LEAF"
+    ],
+    "consequents": [
+      "JUMBO BAG DOILEY PATTERNS"
+    ],
+    "support": 0.032,
+    "confidence": 0.5594,
+    "lift": 7.2093
+  },
+  {
+    "antecedents": [
+      "JUMBO BAG DOILEY PATTERNS"
+    ],
+    "consequents": [
+      "JUMBO BAG VINTAGE LEAF"
+    ],
+    "support": 0.032,
+    "confidence": 0.4124,
+    "lift": 7.2093
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG RED RETROSPOT",
+      "LUNCH BAG PINK POLKADOT"
+    ],
+    "consequents": [
+      "LUNCH BAG SUKI  DESIGN "
+    ],
+    "support": 0.0208,
+    "confidence": 0.5417,
+    "lift": 7.1085
+  },
+  {
+    "antecedents": [
+      "LUNCH BAG SUKI  DESIGN ",
+      "LUNCH BAG  BLACK SKULL."
+    ],
+    "consequents": [
+      "LUNCH BAG RED RETROSPOT"
+    ],
+    "support": 0.0218,
+    "confidence": 0.6566,
+    "lift": 7.1063
+  }
+]
