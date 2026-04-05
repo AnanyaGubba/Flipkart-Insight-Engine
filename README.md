@@ -1,4 +1,4 @@
-# Flipkart Sales Analysis
+# Flipkart Insight Engine: Sales Analytics & Forecasting
 ## Data Warehouse + Data Mining in Python
 
 A fully functional sales analytics project using a **SQLite star-schema data warehouse**,
